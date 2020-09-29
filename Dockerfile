@@ -1,14 +1,14 @@
-FROM ubuntu:focal
+FROM alpine:latest
 MAINTAINER Anton Kiselev
 
-ENV TS_VERSION=1.1.77
+ENV ZMP_VERSION=2.1.26
 
-EXPOSE 8090:8090
+ENV ZMP_HOST=192.168.1.10
+ENV ZMP_PORT=7777
+ENV ZMP_PLAYLIST=https://pastebin.com/raw/nFkHuNBL
 
-RUN apt-get update && apt-get install -y wget && \
-    mkdir /torrserver/ && cd /torrserver/ && mkdir /db && \
-    wget -O TorrServer -P /torrserver/ "https://github.com/YouROK/TorrServer/releases/download/$TS_VERSION/TorrServer-linux-amd64" && \
-    chmod +x /torrserver/TorrServer
+RUN mkdir /opt/zmp/ && mkdir /opt/zmp/playlist/ && cd /opt/zmp/ && \
+    wget -O zmp-linux-amd64 -P /opt/zmp/ "https://github.com/Antonditto/docker-zmp/blob/master/ZMP/$ZMP_VERSION/zmp-linux-amd64?raw=true" && \
+    chmod +x /opt/zmp/zmp-linux-amd64
 
-ENTRYPOINT ["/torrserver/TorrServer"]
-CMD ["--path", "/torrserver/db"]
+ENTRYPOINT ["/bin/sh" , "-c" , "./opt/zmp/zmp-linux-amd64 --host $ZMP_HOST --port $ZMP_PORT --rosnd --best $ZMP_PLAYLIST"]
